@@ -13,16 +13,18 @@ npm install @kyvrixon/encryptor@latest
 ```ts
 import Encryptor from '@kyvrixon/encryptor';
 
-const password = 'supersecret';
-const encryptor = new Encryptor(password);
+(async () => {
+    const password = 'supersecret';
+    const encryptor = new Encryptor(password);
 
-const secretMessage = 'This is a secret!';
-const encrypted = encryptor.encrypt(secretMessage);
+    const secretMessage = 'This is a secret!';
+    const encrypted = await encryptor.encrypt(secretMessage);
 
-console.log('Encrypted:', encrypted);
+    console.log('Encrypted:', encrypted);
 
-const decrypted = encryptor.decrypt(encrypted);
-console.log('Decrypted:', decrypted); // This is a secret!
+    const decrypted = await encryptor.decrypt(encrypted);
+    console.log('Decrypted:', decrypted); // This is a secret!
+})();
 ```
 
 ## ⚙️ Options
