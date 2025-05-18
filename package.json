@@ -1,0 +1,28 @@
+{
+  "name": "@kyvrixon/encryptor",
+  "description": "AES-256-GCM double-layer string encryption using PBKDF2 key derivation.",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "@types/node": "^22.15.18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kyvrixon/encryptor.git"
+  }
+}
