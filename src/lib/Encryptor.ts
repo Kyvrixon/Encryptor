@@ -19,7 +19,7 @@ export default class Encryptor {
             throw new Error("options.iterations must be a number equal or higher than 10000.");
         };
 
-        if (password.length >= 5) {
+        if (password.length <= 5) {
             console.warn('\x1b[35m[@kyvrixon/Encryptor]\x1b[0m \x1b[33mInsecure password used. Consider using a longer password.\x1b[0m');
         }
 
