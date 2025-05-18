@@ -1,6 +1,6 @@
 # @kyvrixon/encryptor
 
-AES-256-GCM double-layer string encryption using PBKDF2 key derivation for Node.js.
+AES-256-GCM string encryption using PBKDF2 key derivation for Node.js.
 
 ## 📦 Installation
 

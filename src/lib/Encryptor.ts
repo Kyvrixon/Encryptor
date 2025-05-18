@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 
 /**
- * Encryptor for AES-256-GCM with double-layer encryption and PBKDF2 key derivation.
+ * AES-256-GCM string encryption using PBKDF2 key derivation for Node.js.
  */
 export default class Encryptor {
     private password: string;
@@ -9,25 +9,24 @@ export default class Encryptor {
     private keyLen: number;
     private digest: string;
 
-    /**
-     * Initializes a new instance of the Encryptor class.
-     * @param password The encryption/decryption password. Must be at least 5 characters.
-     * @param options Optional config: `iterations` for PBKDF2. Minimum 10,000.
-     */
     constructor(password: string, options?: { iterations?: number }) {
-        if (typeof password !== "string" || password.length < 5) {
-            throw new Error("Password must be a non-empty string longer than 5 characters.");
-        }
+        if (typeof password !== "string") {
+            throw new Error("Password must be a non-empty string");
+        };
 
         const iterations = options?.iterations ?? 100_000;
         if (typeof iterations !== "number" || iterations < 10_000) {
-            throw new Error("options.iterations must be a number >= 10000.");
+            throw new Error("options.iterations must be a number equal or higher than 10000.");
+        };
+
+        if (password.length >= 5) {
+            console.warn('\x1b[35m[@kyvrixon/Encryptor]\x1b[0m \x1b[33mInsecure password used. Consider using a longer password.\x1b[0m');
         }
 
         this.password = password;
         this.iterations = iterations;
         this.keyLen = 32;
-        this.digest = 'sha256';
+        this.digest = 'sha512';
     }
 
     private deriveKey(salt?: Buffer): { key: Buffer; salt: Buffer } {
@@ -36,37 +35,39 @@ export default class Encryptor {
         return { key, salt: usedSalt };
     }
 
-    private aesGcmEncrypt(plaintext: string, key: Buffer): { encrypted: Buffer; iv: Buffer; tag: Buffer } {
+    private aesGcmEncrypt(content: string, key: Buffer): { encrypted: Buffer; iv: Buffer; tag: Buffer } {
         const iv = crypto.randomBytes(12);
         const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
-        const encrypted = Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()]);
+        const encrypted = Buffer.concat([cipher.update(content, 'utf8'), cipher.final()]);
         const tag = cipher.getAuthTag();
         return { encrypted, iv, tag };
     }
 
     private aesGcmDecrypt(encrypted: Buffer, key: Buffer, iv: Buffer, tag: Buffer): Buffer {
-        const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
-        decipher.setAuthTag(tag);
-        return Buffer.concat([decipher.update(encrypted), decipher.final()]);
+        try {
+            const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
+            decipher.setAuthTag(tag);
+            return Buffer.concat([decipher.update(encrypted), decipher.final()]);
+        } catch (e) {
+            throw e;
+        }
     }
 
+
     /**
-     * Encrypts a string using two AES-256-GCM layers.
+     * Encrypts a string using AES-256-GCM.
      * @param content UTF-8 string (e.g. JSON, text) to encrypt.
      * @returns Encrypted base64 string.
      */
     public encrypt(content: string): string {
-        const { key: key1, salt: salt1 } = this.deriveKey();
-        const { encrypted: encrypted1, iv: iv1, tag: tag1 } = this.aesGcmEncrypt(content, key1);
-
-        const { key: key2, salt: salt2 } = this.deriveKey();
-        const innerEncoded = encrypted1.toString('base64');
-        const { encrypted: encrypted2, iv: iv2, tag: tag2 } = this.aesGcmEncrypt(innerEncoded, key2);
+        const { key, salt } = this.deriveKey();
+        const { encrypted, iv, tag } = this.aesGcmEncrypt(content, key);
 
         const combined = Buffer.concat([
-            salt1, iv1, tag1,
-            salt2, iv2, tag2,
-            encrypted2
+            salt,
+            iv,
+            tag,
+            encrypted
         ]);
 
         return combined.toString('base64');
@@ -78,25 +79,22 @@ export default class Encryptor {
      * @returns Decrypted UTF-8 string.
      */
     public decrypt(text: string): string {
-        const data = Buffer.from(text, 'base64');
+        try {
+            const data = Buffer.from(text, 'base64');
 
-        const salt1 = data.subarray(0, 16);
-        const iv1 = data.subarray(16, 28);
-        const tag1 = data.subarray(28, 44);
+            const salt = data.subarray(0, 16);
+            const iv = data.subarray(16, 28);
+            const tag = data.subarray(28, 44);
+            const encrypted = data.subarray(44);
 
-        const salt2 = data.subarray(44, 60);
-        const iv2 = data.subarray(60, 72);
-        const tag2 = data.subarray(72, 88);
+            const key = this.deriveKey(salt).key;
 
-        const encrypted2 = data.subarray(88);
+            const plaintext = this.aesGcmDecrypt(encrypted, key, iv, tag);
 
-        const key1 = this.deriveKey(salt1).key;
-        const key2 = this.deriveKey(salt2).key;
-
-        const decrypted1 = this.aesGcmDecrypt(encrypted2, key2, iv2, tag2);
-        const encrypted1 = Buffer.from(decrypted1.toString('utf8'), 'base64');
-        const plaintext = this.aesGcmDecrypt(encrypted1, key1, iv1, tag1);
-
-        return plaintext.toString('utf8');
+            return plaintext.toString('utf8');
+        } catch (err) {
+            console.error('\x1b[31mDecryption failed: Incorrect key or corrupted data.\x1b[0m', (err as Error).message);
+            return "";
+        }
     }
 }
