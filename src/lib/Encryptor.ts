@@ -15,12 +15,16 @@ export default class Encryptor {
         };
 
         const iterations = options?.iterations ?? 100_000;
-        if (typeof iterations !== "number" || iterations < 10_000) {
-            throw new Error("options.iterations must be a number equal or higher than 10000.");
+        if (typeof iterations !== "number") {
+            throw new Error("option.iterations must be a number");
+        };
+
+        if (iterations < 10_000) {
+            console.warn('\x1b[90m[@kyvrixon/Encryptor]\x1b[0m \x1b[33mLow iteraction count. Consider using a higher value like 25000\x1b[0m');
         };
 
         if (password.length <= 5) {
-            console.warn('\x1b[35m[@kyvrixon/Encryptor]\x1b[0m \x1b[33mInsecure password used. Consider using a longer password.\x1b[0m');
+            console.warn('\x1b[90m[@kyvrixon/Encryptor]\x1b[0m \x1b[33mInsecure password used. Consider using a longer password.\x1b[0m');
         }
 
         this.password = password;
@@ -29,28 +33,55 @@ export default class Encryptor {
         this.digest = 'sha512';
     }
 
-    private deriveKey(salt?: Buffer): { key: Buffer; salt: Buffer } {
-        const usedSalt = salt ?? crypto.randomBytes(16);
-        const key = crypto.pbkdf2Sync(this.password, usedSalt, this.iterations, this.keyLen, this.digest);
-        return { key, salt: usedSalt };
-    }
-
-    private aesGcmEncrypt(content: string, key: Buffer): { encrypted: Buffer; iv: Buffer; tag: Buffer } {
-        const iv = crypto.randomBytes(12);
-        const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
-        const encrypted = Buffer.concat([cipher.update(content, 'utf8'), cipher.final()]);
-        const tag = cipher.getAuthTag();
-        return { encrypted, iv, tag };
-    }
-
-    private aesGcmDecrypt(encrypted: Buffer, key: Buffer, iv: Buffer, tag: Buffer): Buffer {
-        try {
-            const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
-            decipher.setAuthTag(tag);
-            return Buffer.concat([decipher.update(encrypted), decipher.final()]);
-        } catch (e) {
-            throw e;
+    private deriveKey(salt?: Buffer): Promise<{ key: Buffer; salt: Buffer }> {
+        if (salt) {
+            return new Promise((resolve, reject) => {
+                crypto.pbkdf2(this.password, salt, this.iterations, this.keyLen, this.digest, (err, derivedKey) => {
+                    if (err) return reject(err);
+                    resolve({ key: derivedKey, salt });
+                });
+            });
+        } else {
+            return new Promise((resolve, reject) => {
+                crypto.randomBytes(16, (err, newSalt) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        crypto.pbkdf2(this.password, newSalt, this.iterations, this.keyLen, this.digest, (err2, derivedKey) => {
+                            if (err2) return reject(err2);
+                            resolve({ key: derivedKey, salt: newSalt });
+                        });
+                    }
+                });
+            });
         }
+    }
+
+    private aesGcmEncrypt(content: string, key: Buffer): Promise<{ encrypted: Buffer; iv: Buffer; tag: Buffer }> {
+        return new Promise((resolve, reject) => {
+            crypto.randomBytes(12, (err, iv) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
+                    const encrypted = Buffer.concat([cipher.update(content, 'utf8'), cipher.final()]);
+                    const tag = cipher.getAuthTag();
+                    resolve({ encrypted, iv, tag });
+                }
+            });
+        });
+    }
+
+    private aesGcmDecrypt(encrypted: Buffer, key: Buffer, iv: Buffer, tag: Buffer): Promise<Buffer> {
+        return new Promise((resolve, reject) => {
+            try {
+                const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
+                decipher.setAuthTag(tag);
+                resolve(Buffer.concat([decipher.update(encrypted), decipher.final()]));
+            } catch (e) {
+                reject(e);
+            }
+        });
     }
 
 
@@ -59,9 +90,9 @@ export default class Encryptor {
      * @param content UTF-8 string (e.g. JSON, text) to encrypt.
      * @returns Encrypted base64 string.
      */
-    public encrypt(content: string): string {
-        const { key, salt } = this.deriveKey();
-        const { encrypted, iv, tag } = this.aesGcmEncrypt(content, key);
+    public async encrypt(content: string): Promise<string> {
+        const { key, salt } = await this.deriveKey();
+        const { encrypted, iv, tag } = await this.aesGcmEncrypt(content, key);
 
         const combined = Buffer.concat([
             salt,
@@ -78,7 +109,7 @@ export default class Encryptor {
      * @param text Encrypted base64 string.
      * @returns Decrypted UTF-8 string.
      */
-    public decrypt(text: string): string {
+    public async decrypt(text: string): Promise<string> {
         try {
             const data = Buffer.from(text, 'base64');
 
@@ -87,9 +118,9 @@ export default class Encryptor {
             const tag = data.subarray(28, 44);
             const encrypted = data.subarray(44);
 
-            const key = this.deriveKey(salt).key;
+            const key = (await this.deriveKey(salt)).key;
 
-            const plaintext = this.aesGcmDecrypt(encrypted, key, iv, tag);
+            const plaintext = await this.aesGcmDecrypt(encrypted, key, iv, tag);
 
             return plaintext.toString('utf8');
         } catch (err) {
@@ -98,3 +129,4 @@ export default class Encryptor {
         }
     }
 }
+
