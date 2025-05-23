@@ -2,6 +2,10 @@
 
 All changes will be logged here.
 
+# v1.4.1
+# Removed
+- Unused `scmp` dependency.
+
 ## v1.4.0
 # Added
 - Much more secure encryption, now uses multi layered encryption with various methods.
