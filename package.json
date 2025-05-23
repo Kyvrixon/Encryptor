@@ -12,7 +12,13 @@
   },
   "types": "./dist/index.d.ts",
   "files": [
-    "dist"
+    "dist/lib",
+    "dist/index.d.ts",
+    "dist/index.js",
+    "package.json",
+    "README.md",
+    "CHANGELOG.md",
+    "tsconfig.json"
   ],
   "scripts": {
     "build": "tsc",
@@ -71,8 +77,5 @@
     "lightweight encryption",
     "minimal crypto",
     "zero dependency encryption"
-  ],
-  "dependencies": {
-    "scmp": "^2.1.0"
-  }
+  ]
 }
