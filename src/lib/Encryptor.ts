@@ -13,7 +13,7 @@ type EncryptorOptions = {
 }
 
 /**
- * AES-256-GCM string encryption using PBKDF2 key derivation.
+ * AES-256-GCM string encryption using PBKDF2 key derivation with multi method encoding.
  */
 export default class Encryptor {
     private password: string;
