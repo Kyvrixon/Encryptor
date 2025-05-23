@@ -1,7 +1,7 @@
 {
   "name": "@kyvrixon/encryptor",
   "description": "AES-256-GCM string encryption using PBKDF2 key derivation.",
-  "version": "1.3.2",
+  "version": "1.4.0",
   "type": "module",
   "main": "./dist/index.js",
   "exports": {
@@ -15,11 +15,12 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "test": "node dist/tests/test.js"
   },
   "devDependencies": {
-    "typescript": "^5.8.3",
-    "@types/node": "^22.15.18"
+    "@types/node": "^22.15.18",
+    "typescript": "^5.8.3"
   },
   "repository": {
     "type": "git",
@@ -70,5 +71,8 @@
     "lightweight encryption",
     "minimal crypto",
     "zero dependency encryption"
-  ]
+  ],
+  "dependencies": {
+    "scmp": "^2.1.0"
+  }
 }

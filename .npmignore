@@ -1,3 +1,4 @@
 node_modules/
 renovate.json
 src/
+dist/tests/*
