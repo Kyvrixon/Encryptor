@@ -5,10 +5,11 @@ Robust AES-256-GCM encryption and decryption for Javascript, supporting secure s
 
 ## 📦 Installation
 
-> [!TIP] Works with most package managers not just `npm`!
+> [!TIP]
+> Works with most package managers not just `bun`!
 
 ```bash
-npm install @kyvrixon/encryptor@latest
+bun install @kyvrixon/encryptor@latest
 ```
 
 ## 🛠️ Usage
