@@ -1,7 +1,7 @@
 {
   "name": "@kyvrixon/encryptor",
   "description": "AES-256-GCM string encryption using PBKDF2 key derivation with multi method encoding.",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "type": "module",
   "main": "./dist/index.js",
   "exports": {
