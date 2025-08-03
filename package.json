@@ -12,10 +12,9 @@
   },
   "types": "./dist/index.d.ts",
   "files": [
-    "dist/lib",
-    "dist/index.d.ts",
-    "dist/index.js",
+    "dist/",
     "package.json",
+    "bun.lock",
     "README.md",
     "CHANGELOG.md",
     "tsconfig.json"
@@ -25,8 +24,10 @@
     "test": "node dist/tests/test.js"
   },
   "devDependencies": {
-    "@types/node": "^22.15.18",
-    "typescript": "^5.8.3"
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
   },
   "repository": {
     "type": "git",

@@ -1,5 +1,5 @@
 import crypto from 'node:crypto';
-import { Transform, TransformCallback } from 'node:stream';
+import { Transform, type TransformCallback } from 'node:stream';
 
 /**
  * Options for creating an Encryptor instance.
@@ -273,7 +273,7 @@ export default class Encryptor {
                 throw new Error("Decryption failed: " + (err instanceof Error ? err.message : String(err)));
             }
             const padLen = padded[padded.length - 1];
-            if (padLen < 1 || padLen > 16) {
+            if (!padLen || padLen < 1 || padLen > 16) {
                 throw new Error("Invalid padding length detected");
             }
             const clean = padded.subarray(0, padded.length - padLen - 1);
@@ -321,7 +321,7 @@ export default class Encryptor {
                 throw new Error("Decryption failed: " + (err instanceof Error ? err.message : String(err)));
             }
             const padLen = padded[padded.length - 1];
-            if (padLen < 1 || padLen > 16) {
+            if (!padLen || padLen < 1 || padLen > 16) {
                 throw new Error("Invalid padding length detected");
             }
             const clean = padded.subarray(0, padded.length - padLen - 1);
