@@ -1,1 +1,1 @@
-export { default } from './lib/Encryptor.js';
+export * from './lib/Encryptor';

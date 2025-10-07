@@ -1,5 +1,5 @@
-import crypto from 'node:crypto';
-import { Transform, type TransformCallback } from 'node:stream';
+import crypto from 'crypto';
+import { Transform, type TransformCallback } from 'stream';
 
 /**
  * Options for creating an Encryptor instance.
@@ -26,17 +26,6 @@ export type EncryptorOptions = {
 /**
  * AES-256-GCM encryption using PBKDF2 key derivation.
  * Supports both normal and streaming (chunked) encryption/decryption.
- *
- * @example
- * // Normal usage
- * const encryptor = new Encryptor('password');
- * const encrypted = await encryptor.encrypt('secret');
- * const decrypted = await encryptor.decrypt(encrypted);
- *
- * // Streaming usage
- * const encryptor = new Encryptor('password', { stream: true });
- * const encStream = await encryptor.createEncryptStream();
- * inputStream.pipe(encStream).pipe(outputStream);
  */
 export default class Encryptor {
     private password: string;
