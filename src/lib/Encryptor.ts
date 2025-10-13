@@ -44,11 +44,11 @@ export default class Encryptor {
      */
     public constructor(password: string, options?: EncryptorOptions) {
         if (typeof password !== "string" || password.length < 12) {
-            if (!options?.silent) console.warn("[Encryptor] Password should be at least 12 characters and a string.");
+            if (!options?.silent) console.warn("[@kyvrixon/Encryptor]: ValidationWarn: Password should be at least 12 characters and a string.");
         }
 
         if (options?.iterations && options.iterations < 10000) {
-            console.warn("[@kyvrixon/Encryptor] options.iterations must be a number >= 10000 for strong security");
+            console.warn("[@kyvrixon/Encryptor]: ValidatonWarn: 'options.iterations' must be a number >= 10000 for strong security");
         }
         if (options?.pepper && typeof options.pepper !== "string") {
             throw new Error("Pepper must be a string if provided");
@@ -62,16 +62,15 @@ export default class Encryptor {
     /**
      * Creates a transform stream for chunked streaming encryption.
      * Each chunk is encrypted and authenticated independently.
+	 * 
+	 * No random padding is added in streaming mode. Chunk sizes are visible in output.
      *
-     * @returns {Promise<Transform>} Transform stream for encryption.
      * @throws {Error} If streaming mode is not enabled.
      *
      * @example
      * const encryptor = new Encryptor('password', { stream: true });
      * const encStream = await encryptor.createEncryptStream();
      * inputStream.pipe(encStream).pipe(outputStream);
-     *
-     * @note No random padding is added in streaming mode. Chunk sizes are visible in output.
      */
     public async createEncryptStream(): Promise<Transform> {
         if (!this.streamMode) throw new Error("Streaming mode is not enabled in options");
@@ -103,7 +102,6 @@ export default class Encryptor {
      * Creates a transform stream for chunked streaming decryption.
      * Each chunk is decrypted and authenticated independently.
      *
-     * @returns {Promise<Transform>} Transform stream for decryption.
      * @throws {Error} If streaming mode is not enabled.
      *
      * @example
@@ -131,7 +129,6 @@ export default class Encryptor {
                         callback(new Error("Encrypted chunk too short"));
                         return;
                     }
-                    const header = chunkBuf.subarray(0, 4);
                     const salt = chunkBuf.subarray(4, 20);
                     const iv = chunkBuf.subarray(20, 32);
                     const tag = chunkBuf.subarray(32, 48);
@@ -160,9 +157,7 @@ export default class Encryptor {
     /**
      * Derives a key from password, optional pepper, and salt using PBKDF2.
      *
-     * @private
      * @param {Buffer} salt Salt value.
-     * @returns {Promise<Buffer>} Derived key.
      * @throws {Error} If key derivation fails.
      */
     private deriveKey(salt: Buffer): Promise<Buffer> {
@@ -181,7 +176,6 @@ export default class Encryptor {
      * Adds random padding to obfuscate plaintext length.
      *
      * @param {string} plaintext The string to encrypt.
-     * @returns {Promise<string>} The encrypted string (base64url encoded).
      * @throws {Error} If input is invalid or encryption fails.
      */
     public async encrypt(plaintext: string): Promise<string> {
@@ -225,7 +219,6 @@ export default class Encryptor {
      * Removes random padding and verifies integrity.
      *
      * @param {string} encoded The encrypted string (base64url encoded).
-     * @returns {Promise<string>} The decrypted string.
      * @throws {Error} If input is invalid, integrity check fails, or decryption fails.
      */
     public async decrypt(encoded: string): Promise<string> {
@@ -318,4 +311,3 @@ export default class Encryptor {
         }
     }
 }
-

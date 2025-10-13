@@ -1,79 +1,21 @@
 {
   "name": "@kyvrixon/encryptor",
-  "main": "./dist/index.js",
-  "version": "1.5.2-dev",
+  "version": "1.5.2-beta.1",
+  "module": "build/index.js",
+  "main": "build/index.js",
+  "types": "build/types/index.d.ts",
   "type": "module",
+  "files": [
+    "build",
+    "README.md"
+  ],
   "devDependencies": {
     "@types/bun": "latest"
   },
-  "files": [
-    "dist/",
-    "package.json",
-    "bun.lock",
-    "README.md",
-    "tsconfig.json"
-  ],
-  "types": "./dist/index.d.ts",
   "peerDependencies": {
     "typescript": "^5"
   },
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    }
-  },
   "scripts": {
-    "build": "bunx tsc --outDir dist --noEmit false"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/KyvrixonDevelopment/Encryptor.git"
-  },
-  "keywords": [
-    "encryption",
-    "aes",
-    "aes256",
-    "aes-256-gcm",
-    "gcm",
-    "pbkdf2",
-    "nodejs",
-    "node",
-    "node.js",
-    "crypto",
-    "crypto module",
-    "cryptography",
-    "secure",
-    "secure data",
-    "secure storage",
-    "data encryption",
-    "password encryption",
-    "password-based encryption",
-    "symmetric encryption",
-    "string encryption",
-    "text encryption",
-    "secure strings",
-    "typescript",
-    "javascript",
-    "secure nodejs",
-    "key derivation",
-    "key stretching",
-    "auth tag",
-    "iv",
-    "salt",
-    "buffer encryption",
-    "base64 encryption",
-    "decrypt",
-    "encrypt",
-    "encryptor",
-    "kyvrixon",
-    "custom encryption",
-    "data security",
-    "token encryption",
-    "config encryption",
-    "secure JSON",
-    "lightweight encryption",
-    "minimal crypto",
-    "zero dependency encryption"
-  ]
+    "build": "bunx tsc --noEmit false --allowImportingTsExtensions false --outDir build"
+  }
 }

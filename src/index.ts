@@ -1,1 +1,1 @@
-export * from './lib/Encryptor';
+export * from "./lib/Encryptor";
