@@ -1,21 +1,27 @@
 {
-  "name": "@kyvrixon/encryptor",
-  "version": "1.5.2-beta.1",
-  "module": "build/index.js",
-  "main": "build/index.js",
-  "types": "build/types/index.d.ts",
-  "type": "module",
-  "files": [
-    "build",
-    "README.md"
-  ],
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
-  },
-  "scripts": {
-    "build": "bunx tsc --noEmit false --allowImportingTsExtensions false --outDir build"
-  }
+	"name": "@kyvrixon/encryptor",
+	"version": "1.5.2-dev.4",
+	"module": "build/index.js",
+	"main": "build/index.js",
+	"types": "build/types/index.d.ts",
+	"type": "module",
+	"files": [
+		"build",
+		"README.md"
+	],
+	"devDependencies": {
+		"@eslint/js": "^9.37.0",
+		"@stylistic/eslint-plugin": "^5.4.0",
+		"@types/bun": "latest",
+		"eslint": "^9.37.0",
+		"eslint-config-prettier": "^10.1.8",
+		"typescript-eslint": "^8.46.1"
+	},
+	"peerDependencies": {
+		"typescript": "^5"
+	},
+	"scripts": {
+		"build": "bunx tsc --noEmit false --allowImportingTsExtensions false --outDir build",
+		"pretty": "bunx prettier --write . --log-level=warn && bunx eslint --fix ."
+	}
 }
