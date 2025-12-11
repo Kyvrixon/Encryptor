@@ -53,7 +53,7 @@ export default class Encryptor {
 
 		if (options?.iterations && options.iterations < 10000) {
 			console.warn(
-				"[@kyvrixon/Encryptor]: ValidatonWarn: 'options.iterations' must be a number >= 10000 for strong security",
+				"[@kyvrixon/Encryptor]: ValidationWarn: 'options.iterations' must be a number >= 10000 for strong security",
 			);
 		}
 
