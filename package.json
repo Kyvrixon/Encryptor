@@ -10,10 +10,10 @@
 		"README.md"
 	],
 	"devDependencies": {
-		"@eslint/js": "^9.39.1",
+		"@eslint/js": "^9.39.2",
 		"@stylistic/eslint-plugin": "^5.6.1",
 		"@types/bun": "latest",
-		"eslint": "^9.39.1",
+		"eslint": "^9.39.2",
 		"eslint-config-prettier": "^10.1.8",
 		"typescript-eslint": "^8.46.1"
 	},
